@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+    "-//Hibernate/Hibernate Configuration DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+		<mapping class="com.indutech.gnd.dto.Notification"/>
+		<mapping class="com.indutech.gnd.dto.User"></mapping>
+		<mapping class="com.indutech.gnd.dto.CreditCardDetails"></mapping>
+		<mapping class="com.indutech.gnd.dto.Product"/>
+		<mapping class="com.indutech.gnd.dto.Branch"/>
+		<mapping class="com.indutech.gnd.dto.MasterAWB"/>
+		<mapping class="com.indutech.gnd.dto.MasterBank"/>
+		<mapping class="com.indutech.gnd.dto.Network"/>
+		<mapping class="com.indutech.gnd.dto.Bank"/>
+		<mapping class="com.indutech.gnd.dto.State"/>
+		<mapping class="com.indutech.gnd.dto.District"/>
+		<mapping class="com.indutech.gnd.dto.MasterCourierService"/>
+		<mapping class="com.indutech.gnd.dto.Path"/>
+		<mapping class="com.indutech.gnd.dto.RecordEvent"/>
+		<mapping class="com.indutech.gnd.dto.MasterDcms"/>
+		<mapping class="com.indutech.gnd.dto.MasterType"/>
+		<mapping class="com.indutech.gnd.dto.RSNSequenceNumber"/>
+		<mapping class="com.indutech.gnd.dto.CoreFiles"/>
+		<mapping class="com.indutech.gnd.dto.Reports"/>
+		<mapping class="com.indutech.gnd.dto.EmbossaFormat"/>
+		<mapping class="com.indutech.gnd.dto.EmbossaRSN"/>
+		<mapping class="com.indutech.gnd.dto.ProductMapping"/>
+<!-- 		<mapping class="com.indutech.gnd.dto.TestData"/> -->
+<!-- 		<mapping class="com.indutech.gnd.dto.EmailConfigaration"/> -->
+<!-- 		<mapping class="com.indutech.gnd.dto.CardDispatch"/> -->
+<!-- 		<mapping class="com.indutech.gnd.dto.PinDispatch"/> -->
+	</session-factory>
+</hibernate-configuration>

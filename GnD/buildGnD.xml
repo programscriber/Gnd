@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="sbi" default="build.war" basedir=".">
+<tstamp prefix="start" />
+	<property file="build.properties" />
+		<path id="classpath">
+		<fileset dir="${build.pre.reqs.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<pathelement location="${build.output.dir}" />
+		</path>
+		
+		<target name="init" >
+		<echo>${ant.version}</echo>
+		<mkdir dir="${build.output.dir}" />
+		<mkdir dir="${jar.dir}" />
+		<mkdir dir="${war.dir}" />
+		</target>
+		
+		
+		<target name="dir.check"  depends="init">
+		<condition property="build.src.dir.exists">
+			<available file="${build.src.dir}" type="dir" />
+		</condition>
+		</target>
+
+
+	<target name="compile.src" depends="dir.check" if="build.src.dir.exists">
+		<javac debug="true" srcdir="${build.src.dir}" destdir="${web.dir}/WEB-INF/classes"
+			encoding="ISO-8859-1">
+			<include name="camel-config.properties"/>
+			<include name="log4j.properties"/>
+			<!-- controller -->
+						<include name="com/indutech/gnd/controller/CardStateManagerController.java"/>
+						<include name="com/indutech/gnd/controller/FileConvertController.java"/>
+						<include name="com/indutech/gnd/controller/LoginController.java"/>
+						<include name="com/indutech/gnd/controller/MasterDBCont.java"/>
+						<include name="com/indutech/gnd/controller/NotificationController.java"/>
+						<include name="com/indutech/gnd/controller/PinstateManagerController.java"/>
+						<include name="com/indutech/gnd/controller/ProductController.java"/>
+						<include name="com/indutech/gnd/controller/SearchController.java"/>
+						<include name="com/indutech/gnd/controller/ShopFloor.java"/>
+						<include name="com/indutech/gnd/controller/ShopFloorCont.java"/>
+			<!-- service -->	
+						<include name="com/indutech/gnd/service/BranchService.java"/>
+						<include name="com/indutech/gnd/service/BranchServiceImpl.java"/>
+						<include name="com/indutech/gnd/service/CardStateManager.java"/>
+						<include name="com/indutech/gnd/service/CardStateManagerService.java"/>
+						<include name="com/indutech/gnd/service/CorierServiceProviders.java"/>
+						<include name="com/indutech/gnd/service/EmailService.java"/>
+						<include name="com/indutech/gnd/service/EmailServiceImpl.java"/>						
+						<include name="com/indutech/gnd/service/ExcelConvertBean.java"/>
+						<include name="com/indutech/gnd/service/ExcelConverterBeanImpl.java"/>
+						<include name="com/indutech/gnd/service/FileConvertService.java"/>
+						<include name="com/indutech/gnd/service/FileConvertServiceImpl.java"/>
+						<include name="com/indutech/gnd/service/FileStateManager.java"/>
+						<include name="com/indutech/gnd/service/GNDProcessingService.java"/>
+						<include name="com/indutech/gnd/service/GNDProcessingServiceImpl.java"/>
+						<include name="com/indutech/gnd/service/LoginService.java"/>
+						<include name="com/indutech/gnd/service/LoginServiceImpl.java"/>
+						<include name="com/indutech/gnd/service/MasteDBService.java"/>
+						<include name="com/indutech/gnd/service/MasterAWBService.java"/>
+						<include name="com/indutech/gnd/service/MasterAWBServiceImpl.java"/>
+						<include name="com/indutech/gnd/service/NotificationService.java"/>
+						<include name="com/indutech/gnd/service/PinStateManager.java"/>
+						<include name="com/indutech/gnd/service/PinStateManagerService.java"/>
+						<include name="com/indutech/gnd/service/SearchService.java"/>
+						<include name="com/indutech/gnd/service/SearchServiceImpl.java"/>
+						<include name="com/indutech/gnd/service/ShopFloorService.java"/>
+			<!-- DAO -->
+						<include name="com/indutech/gnd/dao/BranchDAO.java"/>
+						<include name="com/indutech/gnd/dao/BranchDAOImpl.java"/>
+						<include name="com/indutech/gnd/dao/FileConvertDAO.java"/>
+						<include name="com/indutech/gnd/dao/FileConverterDAOImpl.java"/>
+						<include name="com/indutech/gnd/dao/FileDAO.java"/>
+						<include name="com/indutech/gnd/dao/FileDAOImpl.java"/>
+						
+						<include name="com/indutech/gnd/dao/FindPath.java"/>
+						<include name="com/indutech/gnd/dao/FindPathImpl.java"/>
+						<include name="com/indutech/gnd/dao/GNDAppExpection.java"/>
+						<include name="com/indutech/gnd/dao/GNDDAO.java"/>
+						<include name="com/indutech/gnd/dao/GNDDAOImpl.java"/>
+						<include name="com/indutech/gnd/dao/LoginDAO.java"/>
+						<include name="com/indutech/gnd/dao/LoginDAOImpl.java"/>
+						<include name="com/indutech/gnd/dao/MasterAWBDAO.java"/>
+						<include name="com/indutech/gnd/dao/MasterAWBDAOImpl.java"/>
+						
+						<include name="com/indutech/gnd/dao/MasterDBdao.java"/>
+						<include name="com/indutech/gnd/dao/NotificationDao.java"/>
+						<include name="com/indutech/gnd/dao/ProductDAO.java"/>
+						<include name="com/indutech/gnd/dao/ProductDAOImpl.java"/>
+						<include name="com/indutech/gnd/dao/SearchDAO.java"/>
+						<include name="com/indutech/gnd/dao/SearchDAOImpl.java"/>
+						<include name="com/indutech/gnd/dao/ShopFloorDao.java"/>
+						<include name="com/indutech/gnd/dao/FileConverterDAOImpl.java.rej"/>
+						
+						
+						
+						<include name="com/indutech/gnd/dto/*.java"/>
+						<include name="com/indutech/gnd/util/*.java"/>
+						<include name="com/indutech/gnd/exception/*.java"/> 
+						<include name="com/indutech/gnd/bo/*.java"/>
+						<include name="com/indutech/gnd/dbCon/*.java"/>
+						<include name="com/indutech/gnd/enumTypes/*.java"/>
+						<include name="com/indutech/gnd/jasper/reports/*.java"/>
+						<include name="com/indutech/gnd/jaxb/*.java"/>
+						<include name="com/indutech/gnd/jms/*.java"/>
+						<include name="com/indutech/gnd/pdf/*.java"/>
+						<include name="com/indutech/gnd/records/*.java"/>
+						<include name="com/indutech/gnd/reports/*.java"/>
+						<include name="com/indutech/gnd/service/decrypt/*.java"/>
+						<include name="com/indutech/gnd/service/drool/*.java"/>
+						<include name="com/indutech/gnd/service/emboss/*.java"/>
+						<include name="com/indutech/gnd/service/quartz/*.java"/>
+						<include name="com/indutech/gnd/vali/*.java"/>
+						
+			<classpath refid="classpath" /> 
+		</javac>
+		
+   
+		<echo message=" ...Compilation done." />
+	</target>
+	
+		
+	   
+	   <target name="build.war" depends="compile.src">
+	   
+	   <war destfile = "${war.dir}/GnD.war" webxml = "${web.dir}/WEB-INF/web.xml">
+
+	  	  <fileset dir = "${web.dir}"> 
+	  	  						<include name="*.jsp"/>
+	   	 	   	 				<include name="pages/addproducts.jsp"/>
+	  	  						<include name="pages/awb.jsp"/>
+	  	  						<include name="pages/branch.jsp"/>
+	  	  						<include name="pages/carddestroy.jsp"/>
+	  	  						<include name="pages/carddilivery.jsp"/>
+	  	  						<include name="pages/carddispatch.jsp"/>
+	  	  						<include name="pages/cardredispatch.jsp"/>
+
+	  	  						<include name="pages/cardreturned.jsp"/>
+	  	  						<include name="pages/daily-notifications.jsp"/>
+	  	  						<include name="pages/exception.jsp"/>
+	  	  						<include name="pages/exceptional-notifications.jsp"/>
+	  	  						<include name="pages/filesearch.jsp"/>
+	  	  						<include name="pages/header.html"/>
+	  	  						<include name="pages/home.jsp"/>
+	  	  						<include name="pages/links.jsp"/>
+	  	  						<include name="pages/login.jsp"/>
+	  	  						<include name="pages/logout.jsp"/>
+	  	  						<include name="pages/notification.jsp"/>
+	  	  						<include name="pages/pindelivery.jsp"/>
+	  	  						<include name="pages/pindestroy.jsp"/>
+	  	  						<include name="pages/pindispatch.jsp"/>
+	  	  						
+	  	  						<include name="pages/pinredispatch.jsp"/>
+	  	  						<include name="pages/pinreturned.jsp"/>
+	  	  						<include name="pages/products.jsp"/>
+	  	  						<include name="pages/recorddetails.jsp"/>
+	  	  						<include name="pages/recordsearch.jsp"/>
+	  	  						<include name="pages/shopfloor.jsp"/>
+	  	  						<include name="pages/weekly-notifications.jsp"/>
+	  	  	
+	  	  						<include name="pages/error/*.jsp"/>
+	  	  						<include name="resources/css/*.*" /> 
+	  	  	  	  				<include name="resources/font/*.*" /> 
+	  	  	  	 				<include name="resources/img/*.png" /> 
+	  	  						<include name="resources/img/icons/*.png" /> 
+	  	  	  	  				<include name="resources/js/*.js" /> 
+	  	  	
+	   	 	   	 				<include name="WEB-INF/web.xml"/>
+	   	 	   	 				<include name="WEB-INF/applicationContextQC.xml"/>
+	   	 	   	 				<include name="WEB-INF/applicationContextWTT.xml"/>
+	   	 	   	 				<include name="WEB-INF/mvc-dispatcher-servlet.xml"/>
+	   	 	   	 				<include name="WEB-INF/hibernate.cfg.xml"/>
+	   	 	   	 				<include name="WEB-INF/route.xml"/>
+	   	 	   	 				<include name="WEB-INF/spring-security.xml"/>
+	   	 						<include name="WEB-INF/schema/*.xsd"/>
+	   	 						<include name="WEB-INF/taglibs/customTaglib.tld"/>	 	  
+	   	   </fileset> 	   
+	   	   <lib dir = "${build.pre.reqs.dir}">
+	   		 <include name="**/*.*" /> 
+	   	   </lib>
+	   	   
+	   <classes dir = "${web.dir}/WEB-INF/classes"/> 
+	 
+	   	   
+	   	</war>
+		
+		<echo message=" ...Building WAR done." />
+	</target>
+</project>

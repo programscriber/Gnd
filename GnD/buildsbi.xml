@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="sbi" default="build.war" basedir=".">
+<tstamp prefix="start" />
+	<property file="build.properties" />
+		<path id="classpath">
+		<fileset dir="${build.pre.reqs.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+		<pathelement location="${build.output.dir}" />
+		</path>
+		
+		<target name="init" >
+		<echo>${ant.version}</echo>
+		<mkdir dir="${build.output.dir}" />
+		<mkdir dir="${jar.dir}" />
+		<mkdir dir="${war.dir}" />
+		</target>
+		
+		
+		<target name="dir.check"  depends="init">
+		<condition property="build.src.dir.exists">
+			<available file="${build.src.dir}" type="dir" />
+		</condition>
+		</target>
+
+
+	<target name="compile.src" depends="dir.check" if="build.src.dir.exists">
+		<javac debug="true" srcdir="${build.src.dir}" destdir="${web.dir}/WEB-INF/classes"
+			encoding="ISO-8859-1">
+						<include name="com/indutech/gnd/controller/SbiController.java"/>
+						<include name="com/indutech/gnd/service/SbisearchServiceImpl.java"/>
+						<include name="com/indutech/gnd/dao/SbisearchDAOImpl.java"/>
+						<include name="com/indutech/gnd/dto/*.java"/>
+						<include name="com/indutech/gnd/jasper/reports/*.java"/>
+						<include name="com/indutech/gnd/util/PaginationTaglib.java"/>
+						<include name="com/indutech/gnd/exception/GnDGenericException.java"/> 
+						<include name="log4j.properties"/> 
+			<classpath refid="classpath" /> 
+		</javac>
+		
+   
+		<echo message=" ...Compilation done." />
+	</target>
+	
+		
+	   
+	   <target name="build.war" depends="compile.src">
+	   
+	   <war destfile = "${war.dir}/sbi.war" webxml = "${web.dir}/WEB-INF/web.xml">
+
+	  	  <fileset dir = "${web.dir}"> 
+	  	  						<include name="*.jsp"/>
+	   	 	   	 				<include name="pages/sbirecordsearch.jsp"/>
+	  	  						<include name="pages/sbirecorddetails.jsp"/>
+	  	  						<include name="pages/rsn.jsp"/>
+	  	  						<include name="pages/awbsearch.jsp"/>
+	  	  						<include name="pages/bankaccountno.jsp"/>
+	  	  						<include name="pages/branchwise.jsp"/>
+	  	  						<include name="pages/pinawb.jsp"/>
+	  	  						<include name="pages/exception.jsp"/>
+	  	  	
+	  	  						<include name="pages/error/*.jsp"/>
+	  	  						<include name="resources/css/*.*" /> 
+	  	  	  	  				<include name="resources/font/*.*" /> 
+	  	  	  	 				<include name="resources/img/*.png" /> 
+	  	  						<include name="resources/img/icons/*.png" /> 
+	  	  	  	  				<include name="resources/js/*.js" /> 
+	  	  	
+	   	 	   	 				<include name="WEB-INF/web.xml"/>
+	   	 	   	 				<include name="WEB-INF/applicationContextsbi.xml"/>
+	   	 	   	 				<include name="WEB-INF/mvc-dispatcher-servlet.xml"/>
+	   	 	   	 				<include name="WEB-INF/hibernate.cfg.xml"/>
+	   	 						<include name="WEB-INF/schema/*.xsd"/>
+	   	 						<include name="WEB-INF/taglibs/customTaglib.tld"/>	 	  
+	   	   </fileset> 	   
+	   	   <lib dir = "${build.pre.reqs.dir}">
+	   		 <include name="**/*.*" /> 
+	   	   </lib>
+	   	   
+	   <classes dir = "${web.dir}/WEB-INF/classes"/> 
+	 
+	   	   
+	   	</war>
+		
+		<echo message=" ...Building WAR done." />
+	</target>
+</project>

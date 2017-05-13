@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:camel="http://camel.apache.org/schema/spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop ./WEB-INF/schema/spring-aop-3.2.xsd
+ 	http://www.springframework.org/schema/mvc ./WEB-INF/schema/spring-mvc-3.2.xsd  
+ 	http://www.springframework.org/schema/beans ./WEB-INF/schema/spring-beans-3.2.xsd  
+ 	http://www.springframework.org/schema/context ./WEB-INF/schema/spring-context-3.2.xsd 
+ 	http://www.springframework.org/schema/jee ./WEB-INF/schema/spring-jee-3.2.xsd  
+	http://www.springframework.org/schema/tx ./WEB-INF/schema/spring-tx-3.2.xsd  
+ 	http://www.springframework.org/schema/task ./WEB-INF/schema/spring-task-3.2.xsd 
+ 	http://camel.apache.org/schema/spring ./WEB-INF/schema/camel-spring.xsd"> 	
+ 	
+<!-- 	<import resource="route.xml" /> -->
+<!-- 	<context:component-scan base-package="com.indutech.gnd.service,com.indutech.gnd.jaxb" /> -->
+	
+	<!-- oracle connection properties uses dataSource -->
+	
+	<import resource="datasource.xml"/>
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation">
+			<value>/WEB-INF/hibernate.cfg.xml</value>
+		</property>
+		<property name="configurationClass">
+			<value>org.hibernate.cfg.AnnotationConfiguration</value>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>
+<!-- 				<prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop> -->
+				<prop key="hibernate.max_fetch_depth">3000</prop>
+				<prop key="hibernate.jdbc.fetch_size">5000</prop>
+				<prop key="hibernate.jdbc.batch_size">1000</prop>
+				<prop key="hibernate.default_batch_fetch_size">1000</prop>
+				<prop key="hibernate.show_sql">false</prop> 
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.use_sql_comments">true</prop>
+			  	<prop key="hibernate.hbm2ddl.auto">update</prop> 
+			</props>
+		</property>
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager"
+		proxy-target-class="true" />
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="sbisearchService" class="com.indutech.gnd.service.SbisearchServiceImpl"/>	
+	<bean id="sbisearchDAO" class="com.indutech.gnd.dao.SbisearchDAOImpl"/>
+	 <context:property-placeholder location="classpath*:log4j.properties" />	 
+</beans>

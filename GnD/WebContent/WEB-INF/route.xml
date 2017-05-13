@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+	
+
+	
+	<routeContext id="initRoute" xmlns="http://camel.apache.org/schema/spring">
+	
+	<!-- SFTP folder focus and decryption -->
+	<route id="fileProcessStart">
+		<from uri="file://{{csv.sftpPath}}?delete=true"/>
+		<to uri="bean:decryptionService?method=undoFormats"/>
+		<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+	</route>
+	
+		<!-- Core file validations from Input folder -->
+		<route id="fileValidation">
+			<from uri="file://{{csv.inputPath}}"/>
+			
+			<to uri="direct:firstRule"/>
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+					
+		</route>
+		
+		<!-- record level validations from Input folder -->
+		<route id="csv2Db">
+			<from uri="file://{{csv.approvedPath}}"/>
+			<to uri="bean:droolBootStrapService?method=fire"/>
+			<choice>
+				<when>
+					<simple>${bean:fileRule1?method=fileTypeCheck}</simple>
+					<to uri="direct:coreFileMarshalling"/>
+				</when>
+				<otherwise>
+					<to uri="direct:ncfFileMarshalling"/>
+				</otherwise>
+			</choice>
+			
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+		</route>
+		
+ 		<route id="embossaCheck">
+ 		<from uri="file://{{csv.embossPath}}"/>
+			<choice>
+				<when>
+					<simple>${bean:fileRule1?method=isVIPCheck}</simple>
+					<to uri="direct:vipprocess"/>
+				</when>
+				<otherwise>
+					<to uri="direct:processEmbossa"/>
+				</otherwise>						
+			</choice>
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>			
+		</route>
+		
+		<route id="vip">
+			<from uri="direct:vipprocess"/>
+			<choice>
+				<when>
+					<simple>${bean:fileRule1?method=saveVIP}</simple>
+					<to uri="bean:embossService?method=processVIPFile"/>
+				</when>
+			</choice>
+		</route>
+		
+		<route id="processEmbossa">
+			<from uri="direct:processEmbossa"/>
+			<choice>
+				<when>
+					<simple>${bean:fileRule1?method=saveEmbossFile}</simple>
+					<to uri="file://{{csv.embossMappedPath}}"/>
+				</when>
+				<otherwise>
+					<to uri="file://{{csv.embossNotProcessed}}"/>
+				</otherwise>						
+			</choice>
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+		</route>
+		<route id="embossaMarshalling">		
+			<from uri="file://{{csv.embossMappedPath}}"/>			
+			<to uri="bean:embossService?method=processEmbossRecord"/>
+			<to uri="bean:embossService?method=generateEmbossMDfile"/>
+			
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+			
+		</route>
+		
+		<!-- PIN MIS IMPORT -->
+		
+		<!--  Not using -->
+		
+<!-- 		<route id="pinMIS"> -->
+<!-- 			<from uri="file://{{csv.pinMisPath}}"/> -->
+<!-- 			<unmarshal> -->
+<!-- 				<csv useMaps="true"> -->
+<!-- 					<header>RSN</header> -->
+<!-- 				</csv> -->
+<!-- 			</unmarshal> -->
+<!-- 			<
+>			 -->
+<!-- 				<simple>${body}</simple> -->
+<!-- 				<to uri="bean:droolService?method=pinMISImport"/>								 -->
+<!-- 			</split> -->
+<!-- 			<to uri="direct:filemove"/> -->
+<!-- 		</route> -->
+<!-- 		<route id="filemove"> -->
+<!-- 			<from uri="direct:filemove"/> -->
+<!-- 			<marshal> -->
+<!-- 				<csv/>					 -->
+<!-- 			</marshal> -->
+<!-- 			<to uri="file://{{csv.pinMisMappedPath}}"/> -->
+<!-- 		</route> -->
+		
+		<!-- CORE FILE MARSHALLING -->
+				
+		<route id = "corefilemarshalling">
+			<from uri="direct:coreFileMarshalling"/>
+			<transacted/>
+			<choice>
+				<when>
+					<simple>${bean:droolRecord?method=setFile}</simple>
+					<to uri= "bean:droolService?method=productChangeUpload"/>
+					 <process ref="baseFileProcessor" />
+					<unmarshal>
+					<csv delimiter="^" useMaps="true" escape='"'>
+							<header>SERIAL NO</header>
+							<header>INSTUTION ID</header>
+							<header>CUSTOMER ID</header>
+							<header>HOME BRANCH CODE</header>
+							<header>ISSUE BRANCH CODE</header>
+							<header>PRIMARY ACCT NO</header>
+							<header>PRIMARY ACCT TYPE</header>
+							<header>PRIMARY ACCT SURVIOUR</header>
+							<header>SECONDARY ACCT1</header>
+							<header>SECONDARY ACCT1 TYPE</header>
+							<header>SECONDARY ACCT1 SURVIOUR</header>
+							<header>SECONDARY ACCT2</header>
+							<header>SECONDARY ACCT2 TYPE</header>
+							<header>SECONDARY_SURVIOUR</header>
+							<header>EMBOSS NAME</header>
+							<header>CUSTOMER FIRST NAME</header>
+							<header>CUSTOMER MIDDLE NAME</header>
+							<header>CUSTOMER SUR NAME</header>
+							<header>ADDR1</header>
+							<header>ADDR2</header>
+							<header>ADDR3</header>
+							<header>ADDR4</header>
+							<header>CITY</header>
+							<header>PIN</header>
+							<header>OFFICE PHONE</header>
+							<header>HOME PHONE</header>
+							<header>PRODUCT</header>
+							<header>CARD STATUS</header>
+							<header>REGISTRATION DATE</header>
+							<header>FAX</header>
+							<header>EMAIL</header>
+							<header>FATHERS FIRST NAME</header>
+							<header>MOTHER MAIDEN NAME</header>
+							<header>DATE OF BIRTH</header>
+							<header>YEAR OF PASSING SSC</header>
+							<header>YEAR OF MARRIAGE</header>
+							<header>FOURTH LINE PRINTING DATA</header>
+							<header>ISD CODE</header>
+							<header>MOBILE NO</header>
+							<header>PRIMARY ACCOUNT PRODUCT CODE</header>
+							<header>SECONDARY ACCOUNT1 PRODUCT CODE</header>
+							<header>SECONDARY ACCOUNT2 PRODUCT CODE</header>
+							<header>HOME BRANCH CIRCLE CODE</header>
+							<header>ISSUE BRANCH CIRCLE CODE</header>				
+						</csv>
+					</unmarshal>
+					<split>			
+						<simple>${body}</simple>
+						<to uri="direct:recordRulesSetStart"/>				
+					</split>
+					<to uri="direct:coreawbalugeneration"/>
+				</when>
+				<otherwise>
+				<to uri="file://{{csv.holdPaath}}" />
+				</otherwise>
+			</choice>	
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>			
+		</route>
+		
+		<route id="coreawbalu">
+			<from uri="direct:coreawbalugeneration"/>
+			<transacted/>
+			<to uri="bean:rec?method=flushCreate"/>
+			<to uri="bean:rec?method=compositeValidationCheck"/>
+<!-- 			<to uri="bean:rec?method=checkBranchGroupSizeExceedRule"/> -->
+			<to uri="bean:rec?method=processTXNData"/>
+<!-- 			<to uri="bean:rec?method=assignLCPCCode"/> -->
+			<to uri="bean:rec?method=assignCardAWB"/>
+			<to uri="bean:rec?method=processTXNDataForAWB"/>
+<!-- 			<to uri="bean:rec?method=assignPinAWB"/>	 -->
+			<to uri="bean:aufformatcheck?method=aufFormatCheckAndProcess" />
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>		
+		</route>	
+		
+		
+	<!--   file rules -->	
+	
+		<route id="firstRule">
+			<from uri="direct:firstRule"/>
+			<transacted/>
+			<choice>
+				<when>
+					<simple>${bean:fileRule1?method=fileCheck}</simple>					
+					<to uri="direct:fileRuleSet1-1"/>
+				</when>
+				<otherwise>
+					<to uri="bean:fileRule1?method=saveFile" />
+					<to uri="file://{{csv.rejectedPath}}" />
+				</otherwise>
+			</choice>
+			
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+			
+		</route>
+	
+	
+		<route id="firstRulSet1-1">
+			<from uri="direct:fileRuleSet1-1"/>
+			<choice>
+				<when>
+					<simple>${bean:fileRule1?method=fileRuleStart}</simple>					
+					<to uri="direct:fileRuleSet1-2"/>
+				</when>
+				<otherwise>
+					<to uri="bean:fileRule1?method=saveFile" />
+					<to uri="file://{{csv.rejectedPath}}" />
+				</otherwise>
+			</choice>
+			
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+			
+		</route>
+		
+		<route id="fileRuleSet1-2">
+			<from uri="direct:fileRuleSet1-2"/>						
+			<choice>
+				<when>
+					<simple>${bean:fileRule1?method=isFileNameValid_rule_3a1}</simple>					
+					<to uri="direct:fileRuleSet1-3"/>
+				</when>
+				<otherwise>
+					<to uri="bean:fileRule1?method=saveFile" />
+					<to uri="file://{{csv.rejectedPath}}" />
+				</otherwise>
+			</choice>
+			
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+			
+		</route>	
+		
+		<route id="fileRuleSet1-3">
+			<from uri="direct:fileRuleSet1-3"/>
+			<choice>
+				<when>
+					<simple>${bean:fileRule1?method=isValidTypeOfFile}</simple>
+					<to uri="direct:fileRuleSet1-3a"/>
+				</when>
+				<otherwise>
+					<to uri="bean:fileRule1?method=saveFile" />
+					<to uri="file://{{csv.rejectedPath}}" />
+				</otherwise>
+			</choice>
+			
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+			
+		</route>
+		
+		<route id="fileRuleSet1-3a">
+			<from uri="direct:fileRuleSet1-3a"/>
+			<choice>
+				<when>
+					<simple>${bean:fileRule1?method=isFileDateValidRule}</simple>
+					<to uri="direct:fileRuleSet1-4"/>
+				</when>
+				<otherwise>
+					<to uri="bean:fileRule1?method=saveFile" />
+					<to uri="file://{{csv.rejectedPath}}" />
+				</otherwise>
+			</choice>
+			
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+			
+		</route>
+		
+		<route id="fileRuleSet1-4">
+			<from uri="direct:fileRuleSet1-4"/>
+			<choice>
+				<when>
+					<simple>${bean:fileRule1?method=isTotalRecord_rule_3d}</simple>	
+<!-- 					<to uri="direct:fileRuleSet1-5"/> -->
+						<to uri="direct:fileRuleSet1-6"/>
+				</when>
+				<otherwise>
+					<to uri="bean:fileRule1?method=saveFile" />
+					<to uri="file://{{csv.rejectedPath}}" />
+				</otherwise>
+			</choice>
+			
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+			
+		</route>
+		
+<!-- 		<route id="fileRuleSet1-5"> -->
+<!-- 			<from uri="direct:fileRuleSet1-5"/> -->
+<!-- 			<choice> -->
+<!-- 				<when> -->
+<!-- 					<simple>${bean:fileRule1?method=isTotalRecord_exceed_3d}</simple>	 -->
+<!-- 					<to uri="direct:fileRuleSet1-6"/> -->
+<!-- 				</when> -->
+<!-- 				<otherwise> -->
+<!-- 					<to uri="bean:fileRule1?method=saveFile" /> -->
+<!-- 					<to uri="file://{{csv.rejectedPath}}" /> -->
+<!-- 				</otherwise> -->
+<!-- 			</choice> -->
+			
+<!-- 			<onException> -->
+<!-- 				<exception>java.lang.Exception</exception> -->
+<!-- 				<redeliveryPolicy maximumRedeliveries="1"/> -->
+<!-- 			</onException>			 -->
+<!-- 		</route> -->
+		
+		<route id="fileRuleSet1-6">
+			<from uri="direct:fileRuleSet1-6"/>
+			<choice>
+				<when>
+					<simple>${bean:fileRule1?method=isEOFMarking_rule_3e}</simple>	
+					<to uri="bean:fileRule1?method=saveFile" />					
+					<to uri="file://{{csv.approvedPath}}" />
+				</when>
+				<otherwise>
+					<to uri="bean:fileRule1?method=saveFile" />
+					<to uri="file://{{csv.rejectedPath}}" />
+				</otherwise>
+			</choice>
+			
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+			
+		</route>
+		
+				
+		<!-- record rules -->
+		
+		<route id="recordRulesSetStart">
+			<from uri="direct:recordRulesSetStart" />
+			<transacted/>
+			<to uri="bean:droolService?method=getDroolRecordBO" />
+			<choice>
+				<when>
+					<simple>${body.flowStatus} != 'RECORD_SYNTAX_ERROR'</simple>
+					<to uri="bean:droolService?method=productCheck"/>
+					<to uri="bean:droolService?method=productIgnore"/>
+					<choice>
+						<when>
+							<simple>${body.flowStatus} != 'RECORD_IGNORE_ERROR'</simple>
+								<to uri="bean:droolBootStrapService?method=bootStrap" />
+									<to uri="direct:dbrecordRuleSet" />
+						</when>
+						<otherwise>
+							<to uri="bean:rec?method=processRawRecordAfterDrools" />
+						</otherwise>	
+					</choice>				
+				</when>				
+		   	</choice>
+		   	
+		   	<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+		</route>		
+						
+		<route id="recordStatus">
+			<from uri="direct:recordStatus"/>						
+			<choice>
+				<when>
+					<simple>${body.flowStatus} == 'RECORD_ERROR'</simple>						
+					<to uri="bean:rec?method=setErrorStatus"/>
+				</when>
+				<otherwise>				
+						<to uri="direct:recordStatus2"/>
+				</otherwise>				
+			</choice>	
+			
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+		</route>	
+		
+		<route id="recordStatus2">
+			<from uri="direct:recordStatus2"/>					
+			<choice>
+				<when>
+					<simple>${body.flowStatus} == 'RECORD_HOLD'</simple>						
+					<to uri="bean:rec?method=setHoldStatus"/>
+				</when>
+				<otherwise>								
+					<to uri="bean:rec?method=setPassStatus"/>
+				</otherwise>				
+			</choice>
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+		</route>
+						
+		<route id="dbrecordRuleSet">
+			<from uri="direct:dbrecordRuleSet"/>
+			<choice>
+				<when>
+					<simple>${body.flowStatus} == 'RECORD_VALID'</simple>
+					<to uri="bean:droolService?method=getDBDroolRecordBO"/>
+					<to uri="bean:droolBootStrapService?method=bootStrapDBDrools"/>
+					<to uri="direct:recordStatus"/>
+					<to uri="bean:rec?method=processRawRecordAfterDrools" />
+				</when>
+				<otherwise>
+					<to uri="direct:recordStatus"/>
+					<to uri="bean:rec?method=processRawRecordAfterDrools" />				
+				</otherwise>				
+		   	</choice>
+		   	<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+		</route>
+		
+		<route id = "ncffilemarshalling">
+				<from uri="direct:ncfFileMarshalling"/>
+					<transacted/>
+			<choice>
+				<when>
+					<simple>${bean:droolRecord?method=setFile}</simple>
+					<to uri= "bean:droolService?method=productChangeUpload"/>
+					<unmarshal>
+						<csv delimiter="^" useMaps="true">
+							<header>BRANCH CODE</header>
+							<header>PRIMARY ACCOUNT</header>
+							<header>PRIMARY ACCOUNT TYPE</header>
+							<header>PRODUCT</header>
+							<header>PRIMARY PRODUCT CODE</header>
+							<header>HOME BRANCH CIRCLE CODE</header>
+							<header>ISSUE BRANCH CIRCLE CODE</header>
+						</csv>
+					</unmarshal>
+					<split>			
+						<simple>${body}</simple>
+						<to uri="direct:recordCNFRulesSetStart"/>				
+					</split>
+					<to uri="direct:ncfawbalugeneration"/>	
+				</when>
+				<otherwise>
+					<to uri="file://{{csv.holdPaath}}" />
+				</otherwise>
+			</choice>		
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+									
+		</route>
+		
+		<route id="ncfawbalu">
+			<from uri="direct:ncfawbalugeneration"/>
+			<transacted/>
+			<to uri="bean:rec?method=flushCreate"/>
+			<to uri="bean:rec?method=compositeValidationCheckForNCF"/>
+<!-- 			<to uri="bean:rec?method=checkBranchGroupSizeExceedRule"/> -->
+			<to uri="bean:rec?method=processTXNData"/>
+			<to uri="bean:rec?method=ncfLCPCCardAWBAssign"/>
+			<to uri="bean:rec?method=processTXNDataForAWBNcf"/>
+			<to uri="bean:aufformatcheck?method=aufFormatCheckAndProcess" />
+			<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>		
+		</route>		
+		
+		<route id="recordCNFRulesSetStart">
+			<from uri="direct:recordCNFRulesSetStart"/>
+			<to uri="bean:droolService?method=getCNFDroolRecordBO" />			
+			<choice>
+				<when>
+					<simple>${body.flowStatus} != 'RECORD_SYNTAX_ERROR'</simple>
+					<to uri="bean:droolService?method=productCheck"/>
+					<to uri="bean:droolService?method=productIgnore"/>
+					<choice>
+						<when>
+							<simple>${body.flowStatus} != 'RECORD_IGNORE_ERROR'</simple>
+								<to uri="bean:droolBootStrapService?method=bootStrapCNF" />
+								<to uri="direct:dbrecordRuleSet" />
+						</when>
+						<otherwise>
+							<to uri="bean:rec?method=processRawRecordAfterDrools" />
+						</otherwise>	
+					</choice>
+<!-- 					<to uri="direct:recordStatus"/> -->
+<!-- 					<to uri="bean:rec?method=processRawRecordAfterDrools" /> -->
+				</when>
+		   	</choice>
+		   	
+		   	<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+			</onException>
+					
+		</route>
+		
+
+<!-- <route>
+   <from uri="activemq:queue:CARD_SEARCH_QUERY_QUEUE" />
+   <convertBodyTo type="java.lang.String"/>
+   <to uri="bean:cardSearchQueryUnMarshaller?method=unMarshallCardSearchQueryForCamel" />
+   <to uri="bean:searchService?method=getDBRecords" />
+   <to uri="bean:cardSearchResultMarshaller?method=marshallCardSearchResultForCamel" />
+   <to uri="bean:searchService?method=postResultMessage" />
+</route>
+
+<route>
+   <from uri="activemq:queue:CARD_SEARCH_RESULT_QUEUE" />
+   <convertBodyTo type="java.lang.String"/>
+   <to uri="bean:cardSearchResultUnMarshaller?method=unMarshallCardSearchResultForCamel" />
+   <to uri="bean:searchService?method=getDBRecords" />
+</route>	 -->		
+
+
+<!--  		
+	<route id="cardDispatch">
+		<from uri="file://{{xls.cardDispatchPath}}?delete=true"/>
+		<to uri="bean:dispatchService?method=cardMISDispatch"/>
+		<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+		</onException>
+	</route>	
+	<route id="pinDispatch">
+		<from uri="file://{{xls.pinDispatchPath}}?delete=true"/>
+		<to uri="bean:dispatchService?method=pinMISDispatch"/>
+		<onException>
+				<exception>java.lang.Exception</exception>
+				<redeliveryPolicy maximumRedeliveries="1"/>
+		</onException>
+	</route>	
+-->			
+
+<!-- 		RTO processed branch group not in use -->
+
+<!-- 			<route id="cardRTOGroup"> -->
+<!-- 				<from uri="file://{{txt.rtoGroupPath}}?delete=true"/> -->
+<!-- 				<to uri="bean:rtoService?method=ChangeAWBByHomeBranchGroup"/> -->
+<!-- 				<onException> -->
+<!-- 					<exception>java.lang.Exception</exception> -->
+<!-- 					<redeliveryPolicy maximumRedeliveries="1"/> -->
+<!-- 				</onException> -->
+<!-- 			</route>	 -->
+<!-- 			<route id="cardRTOIndividual"> -->
+<!-- 				<from uri="file://{{txt.rtoIndividualPath}}?delete=true"/> -->
+<!-- 				<to uri="bean:rtoService?method=ChangeAWBForIndividualRecord"/> -->
+<!-- 				<onException> -->
+<!-- 					<exception>java.lang.Exception</exception> -->
+<!-- 					<redeliveryPolicy maximumRedeliveries="1"/> -->
+<!-- 				</onException> -->
+<!-- 			</route>		 -->
+
+			<!--  for testing -->
+
+<!-- 		<route id="cameltest"> -->
+<!-- 				<from uri="file://{{csv.testpath}}"/> -->
+<!-- 				<to uri="bean:camelTest?method=testing"/> -->
+<!-- 				<onException> -->
+<!-- 					<exception>java.lang.Exception</exception> -->
+<!-- 					<redeliveryPolicy maximumRedeliveries="1"/> -->
+<!-- 				</onException> -->
+<!-- 			</route> -->
+				
+	</routeContext>
+	
+</beans>

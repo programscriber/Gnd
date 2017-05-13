@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.1.0.final using JasperReports Library version 6.1.0  -->
+<!-- 2016-06-10T16:01:31 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="pin_print" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1d6e2741-1eb6-4ce5-ac02-049058ddb006">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sample DB"/>
+	<parameter name="bankId" class="java.lang.Long"/>
+	<parameter name="StartDate" class="java.util.Date"/>
+	<parameter name="EndDate" class="java.util.Date"/>
+	<queryString>
+		<![CDATA[select convert(date,  Stuff(Stuff(SUBSTRING(files.filename,3,6),5,0,'.'),3,0,'.'), 4) as core_date,
+ files.received_date as qc_date, files.LCPC_GROUP as LinkIndicator,
+ (select COUNT(*) from MASTER_CORE_FILES where CORE_FILE_ID = files.ID and FILE_TYPE = 2) as file_count,
+ (select COUNT(*) FROM CUSTOMER_RECORDS_T WHERE STATUS = 5 AND FILE_ID = files.ID) AS Record_Counts 
+  from MASTER_CORE_FILES files WHERE (CONVERT(DATE, files.RECEIVED_DATE) between $P{StartDate} and $P{EndDate}) and files.FILE_TYPE = 1 and STATUS = 3 and substring(filename,1,1) = (select prefix from master_bank_t where bank_id = $P{bankId})]]>
+	</queryString>
+	<field name="core_date" class="java.lang.String"/>
+	<field name="qc_date" class="java.util.Date"/>
+	<field name="LinkIndicator" class="java.lang.String"/>
+	<field name="file_count" class="java.lang.Integer"/>
+	<field name="Record_Counts" class="java.lang.Integer"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="39" splitType="Stretch">
+			<staticText>
+				<reportElement x="2" y="1" width="173" height="30" uuid="2cb08536-6320-4739-8b5b-469329ea5568"/>
+				<textElement>
+					<font size="20"/>
+				</textElement>
+				<text><![CDATA[Pin Printing ]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="27" splitType="Stretch">
+			<staticText>
+				<reportElement x="2" y="0" width="100" height="25" uuid="a4ee984d-98e2-4abf-9775-75ced0eaff05">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<text><![CDATA[CORE DATE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="100" height="25" uuid="a7786ffc-800f-48e4-aee1-b265bedbe78d"/>
+				<text><![CDATA[QC DATE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="402" y="0" width="100" height="25" uuid="a9e44d2a-a9c3-4e86-9343-ffe5b8bcab32"/>
+				<text><![CDATA[RECORD COUNT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="200" y="0" width="100" height="25" uuid="d254e5a6-27e4-4899-ad8b-b122748dcac9"/>
+				<text><![CDATA[LINK INDICATOR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="302" y="0" width="100" height="25" uuid="29c10e2b-0652-4c4b-894e-a9ee2efecd9e"/>
+				<text><![CDATA[FILE COUNT]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="-1" width="100" height="20" uuid="a8cd16f7-a4c9-4f52-ae90-f9e8c1e04376"/>
+				<textFieldExpression><![CDATA[$F{core_date}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="102" y="-2" width="100" height="20" uuid="4e7212b0-76e8-4cb8-911a-295ec41becbb">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{qc_date}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="202" y="0" width="100" height="20" uuid="0d02b780-c822-49d9-9194-6df10b0d53bd"/>
+				<textFieldExpression><![CDATA[$F{LinkIndicator}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="402" y="2" width="100" height="20" uuid="d974aab6-9006-494a-b89e-417c06485352"/>
+				<textFieldExpression><![CDATA[$F{Record_Counts}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="302" y="2" width="100" height="20" uuid="e71d1d3b-9ff4-415e-a50c-b2e02f585936">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{file_count}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="46" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

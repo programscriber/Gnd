@@ -1,0 +1,305 @@
+
+@font-face {
+    font-family: 'Frutiger';
+    src: url('../font/FrutigerNormal.otf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body{
+    font-family: Frutiger;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.main img {
+    width: 80%;
+    margin-bottom: 100px;
+    display: block;
+}
+
+.screens {
+    font-size: 14pt;
+}
+
+.bottom-0{
+    bottom: 0 !important;
+}
+
+.demo-left-nav{
+    width: 195px;
+    min-height: 100%;
+}
+
+.navigation{
+    /*background-color: #E5E4EA;*/
+    margin-left: 80px;
+    font-size: 18px;
+    font-family: Frutiger;
+    width: 100%;
+}
+
+.float-left{
+    float: left;
+    width: 35%;
+}
+.float-right{
+    float: right;
+    width: 35%;
+}
+
+.float-text{
+    vertical-align: top;
+    height:20px;
+    width: 15px !important;
+    padding: 5px 4px;
+}
+
+.right-buttons{
+    margin-bottom: 25px;
+    width: 26%;
+    float: right;
+}
+
+.clear{
+    clear: both;
+}
+
+.container{
+    overflow: hidden;
+    padding: 0px;
+    /*background-color: #FFFFFF;*/
+}
+
+.main{
+    /*background-color: #E5E4EA;*/
+}
+
+
+.left-content,.right-content{
+    padding-top: 45px;
+}
+.right-content{
+    padding-top: 40px;
+    padding-left: 20px;
+}
+
+.right-con{
+    padding-top: 25px;
+    padding-bottom: 31%;
+}
+
+.left-content{
+    float: left;
+    width: 276px;
+    background-color: #E5E4EA;
+    padding-bottom: 500em;
+    margin-bottom: -500em;
+    padding-left: 10px;
+    background: linear-gradient(#f0f0f4, #dcdbe1);
+}
+
+.right-content{
+    float: left;
+    width: 70%;
+    border-left: 1px solid #000;
+    /*padding-left: 5px;*/
+    float: left;
+    margin-right: -1px; /* Thank you IE */
+    border-left: 1px solid #BFBFC1;
+
+    padding-bottom: 500em;
+    margin-bottom: -500em;
+}
+
+.no-border{
+    border-top: medium none;
+    border-bottom: medium none;
+    background-color: #fff;
+    /*float: left;*/
+}
+
+.no-border button{
+    font-size: 14px;
+    padding: 5px 15px;
+    min-width: 30px;
+    float: right;
+    display: inline-table
+}
+
+.reject{
+    margin-right: 85px;
+}
+
+.hold,.unhold{
+    margin-top: -30px
+}
+.no-border,.no-border:hover{
+    border-top: medium none !important;
+    border-left: medium none !important;
+    background-color: #fff!important;
+}
+.no-border,.no-border:hover{
+    border-bottom: medium none !important;
+}
+.table tbody > tr:last-child > td{
+    border-bottom: medium none !important;
+    width: 162px;
+}
+
+.btn-only-img img{
+    margin-bottom: 0px;
+}
+
+.btn-only-img1{
+    float: right;
+padding:0px 0px !important;
+}
+.table-header{
+    width: 80%;
+    float: left;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+.table-header h3{
+    float: left;
+}
+
+.blue-text{
+    color: #000;
+    padding: 5px 0px;
+    margin-top: 5px;
+}
+.select-menu,.hero-unit{
+    margin-top: 3px;
+}
+.second-line{
+    margin-top: 20px;
+}
+
+.col-md-4{
+    width:37.5%;
+}
+.col-md-2{
+  /* width: 20.5%;*/
+}
+.pagination{
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.main-conten{
+    float: left;
+    width: 100%;
+}
+td.no-border:hover{
+    border-bottom: medium none !important;
+}
+
+.ui-menu-item {
+    background-color: #f7f8f8 !important;
+}
+
+.file{
+    display:none;
+}
+
+.navigation ul > li{
+    cursor: pointer;
+}
+
+a{
+    color: #1879C4;
+}
+
+.reject,.hold,.unhold{
+    width: 80px;
+}
+
+.divider{
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.login-right,.login-left{
+    height: 100%;  
+    float: left;
+}
+#centerpoint {
+    top: 50%;
+    left: 50%;
+    position: absolute;
+}
+
+#dialog {
+    position: relative;
+
+    width: 600px;
+    margin-left: -300px;
+
+    height: 400px;
+    margin-top: -200px;
+}
+
+.login-left{
+    background: linear-gradient(to bottom,  #303336 0%,#222528 100%);
+    color: #fff;
+    /*text-align: center;*/
+    width: 70%;
+    margin-top: auto;
+    font-size: 12px;
+    margin-bottom: auto;
+
+}
+.login-left img{
+    left: 23%;
+    top: 40%;
+    position: absolute;
+}
+.login-left span{
+    top: 46%;
+    left: 29%;
+    position: absolute;
+}
+.login-left span.text{
+    top: 48%;
+    width: 400px;
+    word-wrap: break-word; 
+    white-space: initial;
+}
+
+.login-right{
+    /*background-color: #f4f4f8 ;*/
+    background: linear-gradient(to bottom,  #f4f4f8 0%,#dbdae0 100%);
+    width: 30%;
+    padding: 5px;
+    position: relative;
+
+    right:0;
+
+}
+
+.center-box{
+    top: 37%;
+    position: absolute;
+}
+
+.padding-l{
+    padding-left: 15px;
+}
+
+.top-margin{
+    margin-top: 15px;
+}
+
+button.padding-l{
+    margin-left: 31px;
+}
+
+.extra-table {
+    display: block;
+    overflow-x: auto;
+}

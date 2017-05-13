@@ -1,0 +1,150 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:camel="http://camel.apache.org/schema/spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop ./WEB-INF/schema/spring-aop-3.2.xsd
+ 	http://www.springframework.org/schema/mvc ./WEB-INF/schema/spring-mvc-3.2.xsd  
+ 	http://www.springframework.org/schema/beans ./WEB-INF/schema/spring-beans-3.2.xsd  
+ 	http://www.springframework.org/schema/context ./WEB-INF/schema/spring-context-3.2.xsd 
+ 	http://www.springframework.org/schema/jee ./WEB-INF/schema/spring-jee-3.2.xsd  
+	http://www.springframework.org/schema/tx ./WEB-INF/schema/spring-tx-3.2.xsd  
+ 	http://www.springframework.org/schema/task ./WEB-INF/schema/spring-task-3.2.xsd 
+ 	http://camel.apache.org/schema/spring ./WEB-INF/schema/camel-spring.xsd"> 	
+ 	
+	<import resource="route.xml" />
+	<import resource="datasource.xml"/>
+	<context:component-scan base-package="com.indutech.gnd.service,com.indutech.gnd.dao,com.indutech.gnd.jaxb" />
+	
+	<task:annotation-driven executor="taskExecutor"/>
+	
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
+      <property name="corePoolSize" value="50" />
+      <property name="maxPoolSize" value="50" />
+      <property name="keepAliveSeconds" value="10" />
+	</bean>
+	<bean id="traceFormatter"
+		class="org.apache.camel.processor.interceptor.DefaultTraceFormatter">
+		<property name="showBody" value="true" />
+		<property name="showBodyType" value="false" />
+		<property name="showBreadCrumb" value="false" />
+		<property name="maxChars" value="100" />
+	</bean>	
+	<camelContext trace="true" 
+		xmlns="http://camel.apache.org/schema/spring" >
+		<propertyPlaceholder id="properties"
+			location="/camel-config.properties" />
+			
+			
+		<camel:routeContextRef ref="initRoute" />
+<!-- 		<camel:routeContextRef ref="aluRoute" /> -->
+		<dataFormats>
+          <bindy id="bindyDataformat" type="Csv" classType="com.indutech.gnd.bo.CreditCardDetailsBO"/>
+        </dataFormats>
+		
+	</camelContext>
+		
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation">
+			<value>/WEB-INF/hibernate.cfg.xml</value>
+		</property>
+		<property name="configurationClass">
+			<value>org.hibernate.cfg.AnnotationConfiguration</value>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>
+<!-- 				<prop key="hibernate.dialect">org.hibernate.dialect.OracleDialect</prop> -->
+				<prop key="hibernate.max_fetch_depth">3000</prop>
+				<prop key="hibernate.jdbc.fetch_size">5000</prop>
+				<prop key="hibernate.jdbc.batch_size">1000</prop>
+				<prop key="hibernate.default_batch_fetch_size">1000</prop>
+				<prop key="hibernate.show_sql">false</prop> 
+			  	<prop key="hibernate.hbm2ddl.auto">update</prop> 
+			</props>
+		</property>
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager"
+		proxy-target-class="true" />
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+		<!-- SET default mail properties -->
+<!-- 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl"> -->
+<!-- 		<property name="host" value="smtp.gmail.com" /> -->
+<!-- 		<property name="port" value="25" /> -->
+<!-- 		<property name="username" value="vidya@indutech-labs.com" /> -->
+<!-- 		<property name="password" value="vidya123*" /> -->
+<!-- 		<property name="javaMailProperties"> -->
+<!-- 			<props> -->
+<!-- 				<prop key="mail.transport.protocol">smtp</prop> -->
+<!-- 				<prop key="mail.smtp.auth">true</prop> -->
+<!-- 				<prop key="mail.smtp.starttls.enable">true</prop> -->
+<!-- 				<prop key="mail.debug">true</prop> -->
+<!-- 			</props> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
+
+	<!-- You can have some pre-configured messagess also which are ready to 
+		send -->
+<!-- 	<bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage"> -->
+<!-- 		<property name="to" value="sreenu@indutech-labs.com"></property> -->
+<!-- 		<property name="from" value="vidya@indutech-labs.com"></property> -->
+<!-- 		<property name="subject" value="Inventory Report" /> -->
+<!-- 	</bean> -->
+	
+			<bean id="droolRecord" class="com.indutech.gnd.bo.drool.DroolRecordBO"/>
+			<bean id="baseFileProcessor" class="com.indutech.gnd.processor.BaseFileProcessor" />
+<!-- 	<bean id="droolService" class="com.indutech.gnd.service.drool.CreditCardService"/> -->
+	<bean id="droolBootStrapService" class="com.indutech.gnd.service.drool.DroolBootStrap" scope="singleton"/>
+ 	<bean id="decryptionService" class="com.indutech.gnd.service.decrypt.DecryptionService"/> 
+ 	
+ 	<bean id="gndDAO" class="com.indutech.gnd.dao.GNDDAOImpl" />
+	<bean id="masterAWBDAO" class="com.indutech.gnd.dao.MasterAWBDAOImpl"/>
+	<bean id="fileConverterDAO" class="com.indutech.gnd.dao.FileConverterDAOImpl"/>
+	<bean id="findPath" class="com.indutech.gnd.dao.FindPathImpl"/>
+	<bean id="fileDAO" class="com.indutech.gnd.dao.FileDAOImpl"/>
+	
+	<bean id="gndProcessingService" class="com.indutech.gnd.service.GNDProcessingServiceImpl" />
+	<bean id="fileConvertServiceImpl" class="com.indutech.gnd.service.FileConvertServiceImpl"/>
+	<bean id="aufformatcheck" class="com.indutech.gnd.service.AUFFormatCheck"/>
+	
+	<bean id="dispatchService" class="com.indutech.gnd.service.DispatchServiceImpl"/>
+	
+	<bean id="embossService" class="com.indutech.gnd.service.emboss.EmbossService"/>
+	
+	<bean id="productDAO" class="com.indutech.gnd.dao.ProductDAOImpl"/>
+	<bean id="branchDAO" class="com.indutech.gnd.dao.BranchDAOImpl"/>
+	<bean id="dispatchDAO" class="com.indutech.gnd.dao.DispatchDAOImpl"/>
+	
+	<bean id="filedir" class="com.indutech.gnd.records.FileDirectory"/>
+	<bean id="fileObj" class="com.indutech.gnd.records.CoreFile"/>
+	<bean id="rf" class="com.indutech.gnd.records.RecordFactory"/>
+	<bean id="rec" class="com.indutech.gnd.records.Record"/>
+	<bean id = "aufformat2service" class="com.indutech.gnd.service.AUFSecondFormatServiceImpl"/>
+	<bean id="aufsecondformatdao" class="com.indutech.gnd.dao.AUFSecondFormatDAOImpl"/>
+	
+	<bean id="fileRule1" class="com.indutech.gnd.vali.FileRuleSet1"/>
+	
+		<bean id="ruleset1" class="com.indutech.gnd.vali.RecordRuleSet1"/>
+	<bean id="ruleset2" class="com.indutech.gnd.vali.RecordRuleSet2"/>
+	<bean id="ruleset3" class="com.indutech.gnd.vali.RecordRuleSet3"/>
+	<bean id="validationException" class="com.indutech.gnd.vali.ValidationException"/>
+	<bean id="reportgen" class="com.indutech.gnd.reports.ReportGenerator"/>
+	
+	<bean id="jasperReports" class = "com.indutech.gnd.jasper.reports.JasperReportGenerator"/>
+	
+	<!--  factory method creation -->
+	<bean id="initialize" class="com.indutech.gnd.util.DataInitialization" factory-method="getInstance"></bean>
+	
+	<bean id="camelTest" class="com.indutech.gnd.vali.RecordRuleSet1" />
+	
+	
+</beans>	
+	

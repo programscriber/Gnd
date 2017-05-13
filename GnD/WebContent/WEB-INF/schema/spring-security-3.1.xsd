@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:security="http://www.springframework.org/schema/security"
+           elementFormDefault="qualified"
+           targetNamespace="http://www.springframework.org/schema/security">
+  <xs:attributeGroup name="hash">
+      <xs:attribute name="hash" use="required">
+         <xs:annotation>
+            <xs:documentation>Defines the hashing algorithm used on user passwords. Bcrypt is recommended.
+                </xs:documentation>
+         </xs:annotation>
+         <xs:simpleType>
+            <xs:restriction base="xs:token">
+               <xs:enumeration value="bcrypt"/>
+               <xs:enumeration value="plaintext"/>
+               <xs:enumeration value="sha"/>
+               <xs:enumeration value="sha-256"/>
+               <xs:enumeration value="md5"/>
+               <xs:enumeration value="md4"/>
+               <xs:enumeration value="{sha}"/>
+               <xs:enumeration value="{ssha}"/>
+            </xs:restriction>
+         </xs:simpleType>
+      </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="base64">
+      <xs:attribute name="base64" use="required" type="xs:boolean">
+         <xs:annotation>
+            <xs:documentation>Whether a string should be base64 encoded
+                </xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="request-matcher">
+      <xs:attribute name="request-matcher" use="required">
+         <xs:annotation>
+            <xs:documentation>Supersedes the 'path-type' attribute. Defines the strategy use for matching incoming
+                requests. Currently the options are 'ant' (for ant path patterns), 'regex' for regular
+                expressions and 'ciRegex' for case-insensitive regular expressions.
+                </xs:documentation>
+         </xs:annotation>
+         <xs:simpleType>
+            <xs:restriction base="xs:token">
+               <xs:enumeration value="ant"/>
+               <xs:enumeration value="regex"/>
+               <xs:enumeration value="ciRegex"/>
+            </xs:restriction>
+         </xs:simpleType>
+      </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="path-type">
+      <xs:attribute name="path-type" use="required">
+         <xs:annotation>
+            <xs:documentation>Deprecated. Use request-matcher instead.
+                </xs:documentation>
+         </xs:annotation>
+         <xs:simpleType>
+            <xs:restriction base="xs:token">
+               <xs:enumeration value="ant"/>
+               <xs:enumeration value="regex"/>
+            </xs:restriction>
+         </xs:simpleType>
+      </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="port">
+      <xs:attribute name="port" use="required" type="xs:positiveInteger">
+         <xs:annotation>
+            <xs:documentation>Specifies an IP port number. Used to configure an embedded LDAP server, for example.
+                </xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="url">
+      <xs:attribute name="url" use="required" type="xs:token">
+         <xs:annotation>
+            <xs:documentation>Specifies a URL.
+                </xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="id">
+      <xs:attribute name="id" use="required" type="xs:token">
+         <xs:annotation>
+            <xs:documentation>A bean identifier, used for referring to the bean elsewhere in the context.
+                </xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="name">
+      <xs:attribute name="name" use="required" type="xs:token">
+         <xs:annotation>
+            <xs:documentation>A bean identifier, used for referring to the bean elsewhere in the context.
+                </xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+  </xs:attributeGroup>
+  <xs:attributeGroup name="ref">
+      <xs:attribute name="ref" use="required" type="xs:token">
+         <xs:annotation>
+            <xs:documentation>Defines a reference to a Spring bean Id.
+			</xs:documentation>
+		</xs:annotation>
+	</xs:attribute>	
+</xs:attributeGroup>
+</xs:schema>

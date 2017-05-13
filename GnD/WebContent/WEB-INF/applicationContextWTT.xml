@@ -1,0 +1,226 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:camel="http://camel.apache.org/schema/spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop ./WEB-INF/schema/spring-aop-3.2.xsd
+ 	http://www.springframework.org/schema/mvc ./WEB-INF/schema/spring-mvc-3.2.xsd  
+ 	http://www.springframework.org/schema/beans ./WEB-INF/schema/spring-beans-3.2.xsd  
+ 	http://www.springframework.org/schema/context ./WEB-INF/schema/spring-context-3.2.xsd 
+ 	http://www.springframework.org/schema/jee ./WEB-INF/schema/spring-jee-3.2.xsd  
+	http://www.springframework.org/schema/tx ./WEB-INF/schema/spring-tx-3.2.xsd  
+ 	http://www.springframework.org/schema/task ./WEB-INF/schema/spring-task-3.2.xsd 
+ 	http://camel.apache.org/schema/spring ./WEB-INF/schema/camel-spring.xsd"> 	
+ 	
+
+	
+	<!-- oracle connection properties uses dataSource -->
+	<import resource="datasource.xml"/>
+		<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation">
+			<value>/WEB-INF/hibernate.cfg.xml</value>
+		</property>
+		<property name="configurationClass">
+			<value>org.hibernate.cfg.AnnotationConfiguration</value>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+			<prop key="hibernate.max_fetch_depth">3000</prop>
+				<prop key="hibernate.jdbc.fetch_size">5000</prop>
+				<prop key="hibernate.jdbc.batch_size">1000</prop>
+				<prop key="hibernate.default_batch_fetch_size">1000</prop>
+				<prop key="hibernate.show_sql">false</prop> 
+			
+				<prop key="hibernate.use_sql_comments">true</prop>
+			  	<prop key="hibernate.hbm2ddl.auto">update</prop>
+			</props>
+		</property>
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager"
+		proxy-target-class="true" />
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<!-- SET default mail properties -->
+
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="smtp.gmail.com" />
+		<property name="port" value="25" />
+		<property name="username" value="sreenu@indutech-labs.com" />
+		<property name="password" value="xyzzzzz" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.transport.protocol">smtp</prop>
+				<prop key="mail.smtp.auth">true</prop>	
+				<prop key="mail.smtp.starttls.enable">true</prop>			
+				<prop key="mail.debug">true</prop> 
+			</props>
+		</property>
+	</bean>
+
+	<!-- You can have some pre-configured messagess also which are ready to 
+		send -->
+	<bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
+		<property name="to" value="amit@indutech-labs.com"></property>
+		<property name="from" value="sreenu@indutech-labs.com"></property>
+		<property name="subject" value="Inventory Report" />
+	</bean>
+	
+<!-- 		<bean id="droolRecord" class="com.indutech.gnd.bo.drool.DroolRecordBO"/> -->
+<!-- 	<bean id="droolService" class="com.indutech.gnd.service.drool.CreditCardService"/> -->
+<!-- 	<bean id="droolBootStrapService" class="com.indutech.gnd.service.drool.DroolBootStrap"/> -->
+<!--  	<bean id="decryptionService" class="com.indutech.gnd.service.decrypt.DecryptionService"/>  -->
+
+
+	<bean id="pinstateService" class="com.indutech.gnd.service.PinStateManagerService"></bean>
+	<bean id="notificationService" class="com.indutech.gnd.service.NotificationService"></bean>
+	
+<!-- 	<bean id="masterDbOPerat" class="com.indutech.gnd.dao.MasterDbOPerat" /> -->
+	<bean id="loginDAO" class="com.indutech.gnd.dao.LoginDAOImpl" />
+	<bean id="gndDAO" class="com.indutech.gnd.dao.GNDDAOImpl" />
+	<bean id="masterAWBDAO" class="com.indutech.gnd.dao.MasterAWBDAOImpl"/>
+	<bean id="fileConverterDAO" class="com.indutech.gnd.dao.FileConverterDAOImpl"/>
+	<bean id="findPath" class="com.indutech.gnd.dao.FindPathImpl"/>
+	<bean id="fileDAO" class="com.indutech.gnd.dao.FileDAOImpl"/>
+	<bean id="shopFloorDao" class="com.indutech.gnd.dao.ShopFloorDao"/>
+	
+	<bean id="notificationDao" class="com.indutech.gnd.dao.NotificationDao"/>
+	<bean id="loginService" class="com.indutech.gnd.service.LoginServiceImpl" />
+<!-- 	<bean id="gndProcessingService" class="com.indutech.gnd.service.GNDProcessingServiceImpl" /> -->
+<!-- 	<bean id="fileConvertServiceImpl" class="com.indutech.gnd.service.FileConvertServiceImpl"/> -->
+	<bean id="searchService" class="com.indutech.gnd.service.SearchServiceImpl"/>
+	<bean id="shopFloorService" class="com.indutech.gnd.service.ShopFloorService"/>
+	
+<!-- 	<bean id="embossService" class="com.indutech.gnd.service.emboss.EmbossService"/> -->
+	
+	<bean id="excelConverterBeanImpl" class="com.indutech.gnd.service.ExcelConverterBeanImpl"/>
+	<bean id="branchService" class="com.indutech.gnd.service.BranchServiceImpl"/>
+	<bean id="masterAWBService" class="com.indutech.gnd.service.MasterAWBServiceImpl"/>
+	<bean id="masteDBService" class="com.indutech.gnd.service.MasteDBService"/>
+	<bean id="qcprocesService" class="com.indutech.gnd.service.QcProcessService">
+	<property name="mailSender" ref="mailSender" />
+	</bean>
+	
+	<bean id="masterDBdao" class="com.indutech.gnd.dao.MasterDBdao"/>
+	<bean id="productDAO" class="com.indutech.gnd.dao.ProductDAOImpl"/>
+	<bean id="branchDAO" class="com.indutech.gnd.dao.BranchDAOImpl"/>
+	<bean id="searchDAO" class="com.indutech.gnd.dao.SearchDAOImpl"/>
+<bean id="qcprocessDao" class="com.indutech.gnd.dao.QcProcessDAO"/>
+<!-- 	<bean id="filedir" class="com.indutech.gnd.records.FileDirectory"/> -->
+<!-- 	<bean id="fileObj" class="com.indutech.gnd.records.CoreFile"/> -->
+<!-- 	<bean id="rf" class="com.indutech.gnd.records.RecordFactory"/> -->
+<!-- 	<bean id="rec" class="com.indutech.gnd.records.Record"/> -->
+	
+<!-- 	<bean id="fileRule1" class="com.indutech.gnd.vali.FileRuleSet1"/> -->
+	<bean id="series" class="com.indutech.gnd.vali.NumberString"/>
+	
+<!-- 	<bean id="ruleset1" class="com.indutech.gnd.vali.RecordRuleSet1"/> -->
+<!-- 	<bean id="ruleset2" class="com.indutech.gnd.vali.RecordRuleSet2"/> -->
+<!-- 	<bean id="ruleset3" class="com.indutech.gnd.vali.RecordRuleSet3"/> -->
+	<bean id="validationException" class="com.indutech.gnd.vali.ValidationException"/>
+	<bean id="reportgen" class="com.indutech.gnd.reports.ReportGenerator"/>
+	
+	<bean id="jasperReports" class = "com.indutech.gnd.jasper.reports.JasperReportGenerator"/>
+	
+	<bean id="cardStateManagerJobInvoker" class = "com.indutech.gnd.jasper.reports.CardStateManagerJobInvoker"/>
+	
+	<bean id="awbThreshould" class = "com.indutech.gnd.service.AWBThreshouldService"/>
+
+	<bean name="reportGenerationJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+  <property name="jobClass" value="com.indutech.gnd.service.quartz.ReportGenerationJob"/>
+  <property name="jobDataAsMap">
+    <map>
+      <entry key="timeout" value="5"/>
+      <entry key="reportGenerator" value-ref="jasperReports" />
+    </map>
+  </property>
+</bean>
+
+	<bean name="cardStateManagerJob" class="org.springframework.scheduling.quartz.JobDetailBean">
+  <property name="jobClass" value="com.indutech.gnd.service.quartz.CardStateMangerJob"/>
+  <property name="jobDataAsMap">
+    <map>
+    	<entry key="timeout" value="5"/>
+      <entry key="cardStateManagerJobInvoker" value-ref="cardStateManagerJobInvoker" />
+    </map>
+  </property>
+</bean>
+
+<bean name="awbThreshouldAlert" class="org.springframework.scheduling.quartz.JobDetailBean">
+  <property name="jobClass" value="com.indutech.gnd.service.quartz.AWBThreshouldCheckJob"/>
+  <property name="jobDataAsMap">
+    <map>
+      <entry key="timeout" value="5"/>
+      <entry key="awbThreshould" value-ref="awbThreshould" />
+    </map>
+  </property>
+</bean>
+
+<bean id="cronReportTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+  <property name="jobDetail" ref="reportGenerationJob"/>
+<!-- 	 run every morning at 9 AM  -->
+  <property name="cronExpression" value="0 05 13 * * ?"/>
+</bean>
+
+<bean id="cronCardStateManagerTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+  <property name="jobDetail" ref="cardStateManagerJob"/>
+<!-- 	 run every morning at 6 PM  -->
+  <property name="cronExpression" value="0 00 18 * * ?"/>
+</bean>
+
+<bean id="awbThreshouldCheck" class="org.springframework.scheduling.quartz.CronTriggerBean">
+  <property name="jobDetail" ref="awbThreshouldAlert"/>
+<!-- 	 run every morning at 9 AM  -->
+  <property name="cronExpression" value="0 00 00 * * ?"/>
+</bean>
+ 
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+  <property name="triggers">
+    <list>
+<!--       <ref bean="cronReportTrigger"/> -->
+<!--       <ref bean="cronCardStateManagerTrigger"/> -->
+<!-- 			<ref bean = "awbThreshouldCheck"/>  -->
+    </list>
+  </property>
+</bean>
+
+
+<bean id="cardSearchQueryUnMarshaller" class="com.indutech.gnd.jaxb.CardSearchQueryUnMarshaller"/>
+<bean id="cardSearchQueryMarshaller" class="com.indutech.gnd.jaxb.CardSearchQueryMarshaller"/>
+<bean id="cardSearchResultMarshaller" class="com.indutech.gnd.jaxb.CardSearchResultMarshaller"/>
+<bean id="cardSearchResultUnMarshaller" class="com.indutech.gnd.jaxb.CardSearchResultUnMarshaller"/>
+
+<bean id="fileSearchQueryUnMarshaller" class="com.indutech.gnd.jaxb.FileSearchQueryUnMarshaller"/>
+<bean id="fileSearchQueryMarshaller" class="com.indutech.gnd.jaxb.FileSearchQueryMarshaller"/>
+<bean id="fileSearchResultMarshaller" class="com.indutech.gnd.jaxb.FileSearchResultMarshaller"/>
+<bean id="fileSearchResultUnMarshaller" class="com.indutech.gnd.jaxb.FileSearchResultUnMarshaller"/>
+
+<!--  <bean id="jmsConnectionFactory" 
+   class="org.apache.activemq.ActiveMQConnectionFactory">
+   <property name="brokerURL" value="tcp://localhost:61616" />
+</bean>
+ 
+<bean id="pooledConnectionFactory" 
+   class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
+   <property name="maxConnections" value="8" />
+   <property name="connectionFactory" ref="jmsConnectionFactory" />
+</bean>
+ 
+<bean id="jmsConfig" 
+   class="org.apache.camel.component.jms.JmsConfiguration">
+   <property name="connectionFactory" ref="pooledConnectionFactory"/>
+   <property name="concurrentConsumers" value="10"/>
+</bean>
+ 
+<bean id="activemq" 
+    class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <property name="configuration" ref="jmsConfig"/>
+</bean>
+ -->
+</beans>

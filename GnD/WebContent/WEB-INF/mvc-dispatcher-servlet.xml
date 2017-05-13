@@ -1,0 +1,49 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop ./WEB-INF/schema/spring-aop-3.2.xsd
+	http://www.springframework.org/schema/mvc ./WEB-INF/schema/spring-mvc-3.2.xsd 
+	http://www.springframework.org/schema/beans ./WEB-INF/schema/spring-beans-3.2.xsd 
+	http://www.springframework.org/schema/context ./WEB-INF/schema/spring-context-3.2.xsd
+	http://www.springframework.org/schema/jee ./WEB-INF/schema/spring-jee-3.2.xsd 
+	http://www.springframework.org/schema/tx ./WEB-INF/schema/spring-tx-3.2.xsd 
+	http://www.springframework.org/schema/task ./WEB-INF/schema/spring-task-3.2.xsd">
+
+
+	<context:component-scan base-package="com.indutech.gnd.controller" />
+<!-- 	<import resource="/applicationContext.xml" /> -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	
+	<!-- define the REST content negotiating view resolver -->
+    <bean id="contentNegotiationManager"
+          class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean"
+          p:defaultContentType="application/json"
+          p:favorPathExtension="true"
+          p:useJaf="false">
+        <property name="mediaTypes">
+            <map>
+                <entry key="json" value="application/json"/>
+               
+            </map>
+        </property>
+    </bean>
+
+
+	<mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"/>
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+		
+			<value>/pages/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+	</bean>
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+</beans>
+
+
+
